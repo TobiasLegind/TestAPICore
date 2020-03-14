@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using TestAPICore.Models;
@@ -13,23 +14,31 @@ namespace TestAPICore.Controllers
     public class ArticleController : ControllerBase
     {
         private readonly TestApiCoreContext _context;
-
-        public ArticleController(TestApiCoreContext context)
+        private readonly IMapper _mapper;
+        public ArticleController(TestApiCoreContext context, IMapper mapper)
         {
-            _context = context;
+            _context = context ?? throw new ArgumentNullException(nameof(context));
+            _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         }
 
         //GET:      api/Article/GetAll
         [HttpGet]
+        //[Authorize]
         [Route("GetAll")]
         public ActionResult<IEnumerable<Article>> GetAll()
         {
+            var result = _context.ArticleItems;
+            if (result == null)
+            {
+                return NoContent();
+            }
             return _context.ArticleItems;
         }
 
         //GET:      api/Article/{id}
         [HttpGet("{id}")]
-        [Route("GetById")]
+        //[Authorize]
+        [Route("{id:int}")]
         public ActionResult<Article> GetArticleItem(int id)
         {
             var commandItem = _context.ArticleItems.Find(id);
@@ -42,9 +51,14 @@ namespace TestAPICore.Controllers
 
         //POST:     api/Article/
         [HttpPost]
+        //[Authorize]
         [Route("")]
         public ActionResult<Article> PostArticleItem(Article article)
         {
+            if (article == null)
+            {
+                return BadRequest();
+            }
             _context.ArticleItems.Add(article);
             _context.SaveChanges();
 
