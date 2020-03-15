@@ -2,8 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using AutoMapper;
+//using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using TestAPICore.Models;
 
@@ -14,34 +15,36 @@ namespace TestAPICore.Controllers
     public class ArticleController : ControllerBase
     {
         private readonly TestApiCoreContext _context;
-        private readonly IMapper _mapper;
-        public ArticleController(TestApiCoreContext context, IMapper mapper)
+        //private readonly IMapper _mapper;
+        public ArticleController(TestApiCoreContext context)
         {
             _context = context ?? throw new ArgumentNullException(nameof(context));
-            _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
+            //_mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         }
 
         //GET:      api/Article/GetAll
         [HttpGet]
         //[Authorize]
-        [Route("GetAll")]
         public ActionResult<IEnumerable<Article>> GetAll()
         {
-            var result = _context.ArticleItems;
-            if (result == null)
+            var result = _context.ArticleItems
+                .Include(a => a.Author)
+                .ToList();
+            if (!result.Any())
             {
                 return NoContent();
             }
-            return _context.ArticleItems;
+            return result;
         }
 
         //GET:      api/Article/{id}
         [HttpGet("{id}")]
         //[Authorize]
-        [Route("{id:int}")]
         public ActionResult<Article> GetArticleItem(int id)
         {
-            var commandItem = _context.ArticleItems.Find(id);
+            var commandItem = _context.ArticleItems
+                .Include(a => a.Author)
+                .SingleOrDefault(x => x.Id == id);
             if (commandItem == null)
             {
                 return NotFound();
@@ -52,7 +55,6 @@ namespace TestAPICore.Controllers
         //POST:     api/Article/
         [HttpPost]
         //[Authorize]
-        [Route("")]
         public ActionResult<Article> PostArticleItem(Article article)
         {
             if (article == null)

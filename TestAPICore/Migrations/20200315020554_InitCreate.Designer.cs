@@ -10,8 +10,8 @@ using TestAPICore.Models;
 namespace TestAPICore.Migrations
 {
     [DbContext(typeof(TestApiCoreContext))]
-    [Migration("20200314235447_MovedAuthorToSeperateTable")]
-    partial class MovedAuthorToSeperateTable
+    [Migration("20200315020554_InitCreate")]
+    partial class InitCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -50,7 +50,7 @@ namespace TestAPICore.Migrations
                         new
                         {
                             Id = 1,
-                            AuthorId = 1,
+                            AuthorId = 2,
                             Date = new DateTime(2020, 4, 4, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Headline = "Eksperter: Det har nul effekt på smitten i Danmark at lukke grænsen nu",
                             Text = "Tidligere direktør for Sundhedsstyrelsen kritiserer historisk beslutning om at lukke de danske grænser. Det er uklart, hvilke anbefalinger regeringen har bygget beslutningen om at lukke grænserne på."
@@ -67,7 +67,7 @@ namespace TestAPICore.Migrations
 
             modelBuilder.Entity("TestAPICore.Models.Author", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<int>("AuthorId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
@@ -80,32 +80,32 @@ namespace TestAPICore.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("Id");
+                    b.HasKey("AuthorId");
 
-                    b.ToTable("AuthorItems");
+                    b.ToTable("Authors");
 
                     b.HasData(
                         new
                         {
-                            Id = 1,
+                            AuthorId = 1,
                             FirstName = "George",
                             LastName = "RR Martin"
                         },
                         new
                         {
-                            Id = 2,
+                            AuthorId = 2,
                             FirstName = "Stephen",
                             LastName = "Fry"
                         },
                         new
                         {
-                            Id = 3,
+                            AuthorId = 3,
                             FirstName = "James",
-                            LastName = "Elroy"
+                            LastName = "Ellroy"
                         },
                         new
                         {
-                            Id = 4,
+                            AuthorId = 4,
                             FirstName = "Douglas",
                             LastName = "Adams"
                         });
